@@ -91,7 +91,6 @@ public class PolicyService {
             System.out.println(savedPolicy.toString());
 
         Map<String, Object> map = mapper.convertValue(savedPolicy, Map.class);
-        kafkaTemplate.sen
         kafkaTemplate.send("document",map);
 //            CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send("document",entity.getPolicyId().toString(),policyDetails);
 //            future.whenComplete((result, ex) -> {
