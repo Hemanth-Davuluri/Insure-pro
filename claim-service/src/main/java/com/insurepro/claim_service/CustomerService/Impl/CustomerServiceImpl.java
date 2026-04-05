@@ -28,7 +28,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Autowired
     private FraudEngine fraudEngine;
 
-    private final String filePath = "C:\\Users\\hemanth.sai.davuluri\\claim_image";
+    private final String filePath = "C:\\Generated files\\claim-service images";
 
     @Override
     public Claim claimSubmission(MultipartFile image, Claim claim) throws IOException, IOException {
