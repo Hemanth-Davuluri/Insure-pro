@@ -88,7 +88,7 @@ public class PolicyService {
             savedPolicy.setStatus(stateMachine.getState().getId().name());
             return policySubRepository.save(savedPolicy).getPolicyId();
         }
-            System.out.println(savedPolicy.toString());
+        System.out.println(savedPolicy.toString());
 
         Map<String, Object> map = mapper.convertValue(savedPolicy, Map.class);
         kafkaTemplate.send("document",map);

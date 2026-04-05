@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class PdfGenerator {
 
-    private final String basePath="C:\\Users\\hemanth.sai.davuluri\\seshu's work\\Generated Documents\\";
+    private final String basePath="C:\\Generated files\\";
 
     public File generatePolicyPdf(String policyId, Map<String,Object> policyDetails) throws Exception {
 

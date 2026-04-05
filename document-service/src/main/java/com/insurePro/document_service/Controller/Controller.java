@@ -23,7 +23,7 @@ public class Controller {
     @Autowired
     private PDFService pdfService;
 
-    private final String basePath = "C:\\Users\\hemanth.sai.davuluri\\seshu's work\\Generated Documents\\";
+    private final String basePath = "C:\\Generated files";
 
 /*
     *** sample document creation
