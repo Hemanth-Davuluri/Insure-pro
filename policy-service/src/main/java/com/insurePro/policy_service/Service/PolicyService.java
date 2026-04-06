@@ -150,8 +150,8 @@ public class PolicyService {
 
 
 
-//        if(policySubRepository.existsById(id)){
-//            if(cancel) policySubRepository.deleteById(id);
+//        if(policySubRepository.existsById(claimId)){
+//            if(cancel) policySubRepository.deleteById(claimId);
 //            else throw new Exception("Make cancel=true in request param to delete the policy");
 //        }
 //        else throw new Exception("Coverage Type not found");

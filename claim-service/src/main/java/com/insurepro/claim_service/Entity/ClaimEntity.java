@@ -14,7 +14,10 @@ public class ClaimEntity {
 
  @Id 
  @GeneratedValue(strategy = GenerationType.IDENTITY) 
- private Long id; 
+ private Long claimId;
+
+ @Column(name = "customer_id", nullable = false)
+ private Long customerId;
 
  @Column(name = "policy_id", nullable = false) 
  private Long policyId; 
