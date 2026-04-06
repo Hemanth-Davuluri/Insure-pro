@@ -1,41 +1,40 @@
-package insurepro.claim_service.CustomerService.Impl;
+package insurepro.claim_service.Service.Impl;
 
-import insurepro.claim_service.CustomerService.CustomerService;
+import com.insurepro.claim_service.Entity.ClaimEntity;
+import insurepro.claim_service.Service.CustomerService;
 import insurepro.claim_service.DTO.Claim;
 import insurepro.claim_service.DTO.PolicyResponse;
 import insurepro.claim_service.FiegnClients.PolicyServiceFeign;
 import insurepro.claim_service.FraudDetection.FraudEngine;
 import insurepro.claim_service.Mapper.ClaimMapper;
 import insurepro.claim_service.Repository.ClaimRepo;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.Collections;
+import java.util.List;
 
+@Service
+@RequiredArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
-    @Autowired
-    private ClaimRepo claimRepo;
+    private final ClaimRepo claimRepo;
+    private final ClaimMapper claimMapper;
+    private final PolicyServiceFeign policyServiceFeign;
+    private final FraudEngine fraudEngine;
 
-    @Autowired
-    private ClaimMapper claimMapper;
-
-    @Autowired
-    private PolicyServiceFeign policyServiceFeign;
-
-    @Autowired
-    private FraudEngine fraudEngine;
-
-    private final String filePath = "C:\\Users\\hemanth.sai.davuluri\\claim_image";
+    private final String filePath = "C:\\Generated files\\claim-service images";
 
     @Override
-    public Claim claimSubmission(MultipartFile image, Claim claim) throws IOException, IOException {
-
+    public Claim claimSubmission(MultipartFile image, Claim claim) throws IOException {
         /*
          * about creating a folder and storing it in a specific path
-         * if folder doesn't exist it will create a folder with the name of policy id
+         * if folder doesn't exist it will create a folder with the name of policy claimId
          * inside that the imaged will be stored
          */
         String imageFilePath = filePath + File.separator + claim.getPolicyId();
@@ -47,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
         /*
          * applying validation rules by calling fraud Engine .
          */
-        PolicyResponse policyResponse = policyServiceFeign.serviceName(claim.getCustomerId(), claim.getCoverageType());
+        PolicyResponse policyResponse = (PolicyResponse) policyServiceFeign.serviceName(claim.getCustomerId(), claim.getCoverageType());
         String riskDetails = fraudEngine.getRiskDetails(policyResponse, claim);
         claimEntity.setStatus(riskDetails);
         claimEntity.setDate(Instant.now());
@@ -69,5 +68,14 @@ public class CustomerServiceImpl implements CustomerService {
             }
         }
         return folder.getAbsolutePath();
+    }
+
+    public List<Claim> getClaimsBasedOnUserID(Long userId) {
+        List<ClaimEntity> claimedEntitesofUser = claimRepo.findByUserId(userId);
+        if (CollectionUtils.isEmpty(claimedEntitesofUser)) {
+           return Collections.emptyList();
+        }
+        List<Claim> claimsOfuser = claimMapper.EntityToDtoList(claimedEntitesofUser);
+        return claimsOfuser;
     }
 }

@@ -58,7 +58,7 @@ public class PolicyController {
     /*
         * cancel ==> post /subscribingToPolicy?cancel=true         ==> Cancelled
      */
-    @DeleteMapping("/cancelPolicy/{id}")
+    @DeleteMapping("/cancelPolicy/{claimId}")
     public ResponseEntity<String> cancelPolicy(
             @PathVariable("id") Long id,
             @RequestParam(required = false,defaultValue = "false") Boolean cancel

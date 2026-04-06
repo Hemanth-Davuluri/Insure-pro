@@ -21,7 +21,7 @@ public class CoverageController {
 
 
     //   Retrieving all coverage rule
-    @GetMapping("id/{id}")
+    @GetMapping("claimId/{claimId}")
     public ResponseEntity<CoverageRule> getCoverage(@PathVariable("id") Long id) throws Exception{
         CoverageRule rule =coverageService.getCoverageRule(id);
         return ResponseEntity.ok().body(rule);
@@ -50,7 +50,7 @@ public class CoverageController {
     }
 
     //  updating policy
-    @PutMapping("update/{id}")
+    @PutMapping("update/{claimId}")
     public ResponseEntity<String> updateCoverageRule(@PathVariable("id") Long id,@RequestBody CoverageRule updatedCoverage) throws Exception{
         if (coverageService.searchCoverageRule(id)){
             CoverageRule updatedCoverageRule =coverageService.updateCoverageRule(updatedCoverage);

@@ -21,7 +21,7 @@ public class CoverageService {
     @Autowired
     private CoverageRuleMapper coverageRuleMapper;
 
-//  Retrieving coverage rule by id
+//  Retrieving coverage rule by claimId
     public CoverageRule getCoverageRule(Long id) throws Exception {
 
         return coverageRuleMapper.coverageRuleEntityToCoverageRule(coverageRepository.findById(id).orElseThrow(()->new Exception("coverage not found")));
