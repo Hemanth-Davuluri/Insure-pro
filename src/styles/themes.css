@@ -1,0 +1,70 @@
+/* Theme Variables */
+@layer theme {
+  /* Minimal Theme */
+  .theme-minimal {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #212529;
+    --text-secondary: #6c757d;
+    --text-tertiary: #adb5bd;
+    --border-color: #dee2e6;
+    --accent-primary: #0d6efd;
+    --accent-hover: #0b5ed7;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --card-bg: #ffffff;
+    --sidebar-bg: #ffffff;
+    --sidebar-text: #212529;
+    --sidebar-hover: #f8f9fa;
+  }
+
+  /* Glassmorphism Theme */
+  .theme-glassmorphism {
+    --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --bg-secondary: rgba(255, 255, 255, 0.1);
+    --bg-tertiary: rgba(255, 255, 255, 0.05);
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.8);
+    --text-tertiary: rgba(255, 255, 255, 0.6);
+    --border-color: rgba(255, 255, 255, 0.2);
+    --accent-primary: #ffffff;
+    --accent-hover: rgba(255, 255, 255, 0.9);
+    --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --shadow-lg: 0 8px 32px 0 rgba(31, 38, 135, 0.5);
+    --card-bg: rgba(255, 255, 255, 0.1);
+    --sidebar-bg: rgba(255, 255, 255, 0.1);
+    --sidebar-text: #ffffff;
+    --sidebar-hover: rgba(255, 255, 255, 0.2);
+  }
+
+  /* Dark Theme */
+  .theme-dark {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #f1f5f9;
+    --text-secondary: #cbd5e1;
+    --text-tertiary: #94a3b8;
+    --border-color: #334155;
+    --accent-primary: #3b82f6;
+    --accent-hover: #2563eb;
+    --shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.5);
+    --card-bg: #1e293b;
+    --sidebar-bg: #1e293b;
+    --sidebar-text: #f1f5f9;
+    --sidebar-hover: #334155;
+  }
+
+  /* Status Colors */
+  :root {
+    --status-draft: #ffc107;
+    --status-active: #28a745;
+    --status-cancelled: #dc3545;
+    --status-pending: #fd7e14;
+    --status-approved: #28a745;
+    --status-rejected: #dc3545;
+    --status-high-risk: #dc3545;
+  }
+}
