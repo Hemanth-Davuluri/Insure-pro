@@ -1,4 +1,4 @@
-package insurepro.claim_service.ClaimEnum;
+package com.insurepro.claim_service.ClaimEnum;
 
 public enum ClaimStatus {
 

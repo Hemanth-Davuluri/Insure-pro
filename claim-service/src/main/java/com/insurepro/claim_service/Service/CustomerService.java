@@ -1,6 +1,6 @@
-package insurepro.claim_service.Service;
+package com.insurepro.claim_service.Service;
 
-import insurepro.claim_service.DTO.Claim;
+import com.insurepro.claim_service.DTO.Claim;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 

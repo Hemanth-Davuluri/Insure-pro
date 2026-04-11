@@ -1,13 +1,13 @@
-package insurepro.claim_service.Service.Impl;
+package com.insurepro.claim_service.Service.Impl;
 
 import com.insurepro.claim_service.Entity.ClaimEntity;
-import insurepro.claim_service.Service.CustomerService;
-import insurepro.claim_service.DTO.Claim;
-import insurepro.claim_service.DTO.PolicyResponse;
-import insurepro.claim_service.FiegnClients.PolicyServiceFeign;
-import insurepro.claim_service.FraudDetection.FraudEngine;
-import insurepro.claim_service.Mapper.ClaimMapper;
-import insurepro.claim_service.Repository.ClaimRepo;
+import com.insurepro.claim_service.Service.CustomerService;
+import com.insurepro.claim_service.DTO.Claim;
+import com.insurepro.claim_service.DTO.PolicyResponse;
+import com.insurepro.claim_service.FiegnClients.PolicyServiceFeign;
+import com.insurepro.claim_service.FraudDetection.FraudEngine;
+import com.insurepro.claim_service.Mapper.ClaimMapper;
+import com.insurepro.claim_service.Repository.ClaimRepo;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
