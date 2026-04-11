@@ -1,4 +1,4 @@
-package insurepro.claim_service.FiegnClients;
+package com.insurepro.claim_service.FiegnClients;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping; 

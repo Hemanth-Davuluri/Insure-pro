@@ -1,9 +1,9 @@
-package insurepro.claim_service.FraudDetection;
+package com.insurepro.claim_service.FraudDetection;
 
-import insurepro.claim_service.ClaimEnum.ClaimStatus;
-import insurepro.claim_service.DTO.Claim;
-import insurepro.claim_service.DTO.PolicyResponse;
-import insurepro.claim_service.Repository.ClaimRepo;
+import com.insurepro.claim_service.ClaimEnum.ClaimStatus;
+import com.insurepro.claim_service.DTO.Claim;
+import com.insurepro.claim_service.DTO.PolicyResponse;
+import com.insurepro.claim_service.Repository.ClaimRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.Instant;

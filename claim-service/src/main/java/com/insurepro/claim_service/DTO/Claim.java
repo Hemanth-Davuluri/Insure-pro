@@ -1,4 +1,4 @@
-package insurepro.claim_service.DTO;
+package com.insurepro.claim_service.DTO;
 
 import lombok.Getter;
 import lombok.Setter; 

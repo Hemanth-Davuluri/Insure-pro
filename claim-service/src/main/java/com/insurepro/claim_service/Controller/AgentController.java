@@ -1,7 +1,7 @@
-package insurepro.claim_service.Controller;
+package com.insurepro.claim_service.Controller;
 
-import insurepro.claim_service.DTO.Claim;
-import insurepro.claim_service.Service.AgentService;
+import com.insurepro.claim_service.DTO.Claim;
+import com.insurepro.claim_service.Service.AgentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
