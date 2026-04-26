@@ -10,7 +10,6 @@ import com.insurepro.auth_service.Service.Impl.UserInfoConfigManager;
 import com.insurepro.auth_service.Utils.ResponseHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,17 +24,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserController {
 
-    @Autowired
-    private CustomerService customerService;
-
-    @Autowired
-    private JWTUtil jwtUtil;
-
-    @Autowired
-    private AuthenticationManager authenticationManager;
-
-    @Autowired
-    private UserInfoConfigManager userInfoConfigManager;
+    private final CustomerService customerService;
+    private final JWTUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO login){
