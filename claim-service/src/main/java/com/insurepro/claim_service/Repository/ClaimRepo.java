@@ -11,9 +11,8 @@ import java.util.List;
 
 @Repository 
 public interface ClaimRepo extends JpaRepository<ClaimEntity,Long> {
-
- Long countByPolicyIdaAndCreatedAtAfter(Long policyId, Instant thirtyDaysAgo);
- List<ClaimEntity> findByUserId(Long userId);
- ClaimEntity findAllByClaimIdAndCustomerID(Long claimId, Long CustomerID);
- Page<ClaimEntity> findByStatus(String status, Pageable pageable);
+     Long countByPolicyIdAndDateAfter(Long policyId, Instant thirtyDaysAgo);
+     List<ClaimEntity> findByCustomerId(Long userId);
+     ClaimEntity findAllByClaimIdAndCustomerId(Long claimId, Long CustomerId);
+     Page<ClaimEntity> findByStatus(String status, Pageable pageable);
 }

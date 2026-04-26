@@ -4,7 +4,7 @@ import com.insurepro.claim_service.Entity.ClaimEntity;
 import com.insurepro.claim_service.Service.CustomerService;
 import com.insurepro.claim_service.DTO.Claim;
 import com.insurepro.claim_service.DTO.PolicyResponse;
-import com.insurepro.claim_service.FiegnClients.PolicyServiceFeign;
+import com.insurepro.claim_service.FiegnClient.PolicyServiceFeign;
 import com.insurepro.claim_service.FraudDetection.FraudEngine;
 import com.insurepro.claim_service.Mapper.ClaimMapper;
 import com.insurepro.claim_service.Repository.ClaimRepo;
@@ -46,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
         /*
          * applying validation rules by calling fraud Engine .
          */
-        PolicyResponse policyResponse = (PolicyResponse) policyServiceFeign.serviceName(claim.getCustomerId(), claim.getCoverageType());
+        PolicyResponse policyResponse = policyServiceFeign.serviceName(claim.getCustomerId(), claim.getCoverageType());
         String riskDetails = fraudEngine.getRiskDetails(policyResponse, claim);
         claimEntity.setStatus(riskDetails);
         claimEntity.setDate(Instant.now());
@@ -71,7 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     public List<Claim> getClaimsBasedOnUserID(Long userId) {
-        List<ClaimEntity> claimedEntitesofUser = claimRepo.findByUserId(userId);
+        List<ClaimEntity> claimedEntitesofUser = claimRepo.findByCustomerId(userId);
         if (CollectionUtils.isEmpty(claimedEntitesofUser)) {
            return Collections.emptyList();
         }
