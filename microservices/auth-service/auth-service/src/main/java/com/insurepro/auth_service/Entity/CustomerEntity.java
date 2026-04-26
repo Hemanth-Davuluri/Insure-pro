@@ -1,10 +1,7 @@
 package com.insurepro.auth_service.Entity;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -22,6 +19,7 @@ public class CustomerEntity {
     private String password;
     private String email;
     private String phoneNumber;
+    @ElementCollection
     private List<String> roles;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
