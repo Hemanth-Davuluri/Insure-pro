@@ -1,18 +1,18 @@
 package com.insurePro.document_service.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.insurePro.document_service.DTO.PolicyEventDTO;
 import com.insurePro.document_service.Entity.DocumentEntity;
 import com.insurePro.document_service.Repository.DocumentRepo;
 import com.insurePro.document_service.Utilites.PdfGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
-import java.util.Map;
 
 @Service
+@Slf4j
 public class PDFService {
 
     @Autowired
@@ -22,37 +22,34 @@ public class PDFService {
     private PdfGenerator pdfGenerator;
 
     @KafkaListener(topics = "document" , groupId = "user-group")
-    private void GenerateDoc(String message) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> policyDetails = mapper.readValue(message, new TypeReference<>() {});
-        generatePolicyPdf(policyDetails);
+    public void generateDoc(PolicyEventDTO policyEventDTO){
+        if (documentRepo.existsByPolicyId(policyEventDTO.getPolicyId())) {
+            return;
+        }
+        try {
+            File file = generatePolicyPdf(policyEventDTO);
+            saveToDb(policyEventDTO.getPolicyId(), file.getPath());
+            System.out.println(file.getPath());
+        }
+        catch (Exception e) {
+            log.error("PDF generation failed for policy Id {}", policyEventDTO.getPolicyId(), e);
+        }
     }
 
-    private File generatePolicyPdf(Map<String, Object> policyDetails) throws Exception {
-        File pdfFile = pdfGenerator.generatePolicyPdf(policyDetails.get("policyId").toString(), policyDetails);
+    private File generatePolicyPdf(PolicyEventDTO policyEventDTO) throws Exception {
+        File pdfFile = pdfGenerator.generatePolicyPdf(String.valueOf(policyEventDTO.getPolicyId()), policyEventDTO);
 
         if(pdfGenerator.hasContent(pdfFile)){
-
-            Object policyIdObj = policyDetails.get("policyId");
-            Long policyId = null;
-            if (policyIdObj instanceof Integer) {
-                policyId = ((Integer) policyIdObj).longValue();
-            } else if (policyIdObj instanceof Long) {
-                policyId = (Long) policyIdObj;
-            } else if (policyIdObj != null) {
-                policyId = Long.valueOf(policyIdObj.toString());
-            }
-
+            Long policyId = policyEventDTO.getPolicyId();
             saveToDb(policyId,pdfFile.getPath());
         }
         System.out.println(pdfFile.getPath());
         return pdfFile;
     }
-    public void saveToDb(Long policyId,String path) {
+    private void saveToDb(Long policyId,String path) {
         DocumentEntity documentEntity = new DocumentEntity();
         documentEntity.setPolicyId(policyId);
         documentEntity.setFilePath(path);
         documentRepo.save(documentEntity);
     }
-
 }

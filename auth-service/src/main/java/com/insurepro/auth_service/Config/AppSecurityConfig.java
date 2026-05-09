@@ -25,7 +25,7 @@ public class AppSecurityConfig {
     @Autowired
     private UserInfoConfigManager userInfoConfigManager;
 
-    @Bean
+    /*@Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.authorizeHttpRequests(request -> request
                         .requestMatchers( "/v3/api-docs/**",
@@ -44,15 +44,15 @@ public class AppSecurityConfig {
 
                 .addFilterBefore((Filter) jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
-    }
+    }*/
 
-//    @Bean
-//    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-//
-//        return http.authorizeHttpRequests(req ->
-//                req.anyRequest()
-//                        .permitAll()).csrf(AbstractHttpConfigurer::disable).build();
-//    }
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+        return http.authorizeHttpRequests(req ->
+                req.anyRequest()
+                        .permitAll()).csrf(AbstractHttpConfigurer::disable).build();
+    }
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

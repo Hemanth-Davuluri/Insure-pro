@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/CoverageRules")
+@RequestMapping("/policy/CoverageRules")
 public class CoverageController {
 
     @Autowired
@@ -22,7 +22,7 @@ public class CoverageController {
 
     //   Retrieving all coverage rule
     @GetMapping("claimId/{claimId}")
-    public ResponseEntity<CoverageRule> getCoverage(@PathVariable("id") Long id) throws Exception{
+    public ResponseEntity<CoverageRule> getCoverage(@PathVariable("claimId") Long id) throws Exception{
         CoverageRule rule =coverageService.getCoverageRule(id);
         return ResponseEntity.ok().body(rule);
     }
@@ -38,7 +38,6 @@ public class CoverageController {
     @PostMapping("/createCoverageRule")
     public ResponseEntity<String> createCoverageRule(@RequestBody CoverageRule coverageRule) throws Exception{
         Long coverageId= coverageService.createCoverageRule(coverageRule);
-
         return ResponseEntity.ok().body("created a policy: "+coverageId);
     }
 
@@ -67,9 +66,4 @@ public class CoverageController {
         CoverageRule rule = coverageService.getCoverageRuleFields(coverageType);
         return ResponseEntity.ok(rule.getRequiredFields());
     }
-
-
-
-
-
 }

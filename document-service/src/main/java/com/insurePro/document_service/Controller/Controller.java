@@ -48,25 +48,25 @@ public class Controller {
 //        }
 //        return pdfGenerator.generatePolicyPdf(PolicyId,entry);
 //    }
-
-    @PostMapping("/generate/{policyId}")
-    public ResponseEntity<FileSystemResource> generatePdf(
-            @PathVariable("policyId") String policyId,
-            @RequestBody Map<String,Object> policyDetails
-            )throws Exception{
-
-        File pdfFile = pdfGenerator.generatePolicyPdf(policyId, policyDetails);
-
-        if(pdfGenerator.hasContent(pdfFile)){
-            pdfService.saveToDb(Long.valueOf(policyId),pdfFile.getPath());
-        }
-        FileSystemResource resource = new FileSystemResource(pdfFile);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename="+pdfFile.getName())
-                .contentType(MediaType.APPLICATION_PDF)
-                .contentLength(pdfFile.length())
-                .body(resource);
-    }
+//
+//    @PostMapping("/generate/{policyId}")
+//    public ResponseEntity<FileSystemResource> generatePdf(
+//            @PathVariable("policyId") String policyId,
+//            @RequestBody Map<String,Object> policyDetails
+//            )throws Exception{
+//
+//        File pdfFile = pdfGenerator.generatePolicyPdf(policyId, policyDetails);
+//
+//        if(pdfGenerator.hasContent(pdfFile)){
+//            pdfService.saveToDb(Long.valueOf(policyId),pdfFile.getPath());
+//        }
+//        FileSystemResource resource = new FileSystemResource(pdfFile);
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION,"attachment; filename="+pdfFile.getName())
+//                .contentType(MediaType.APPLICATION_PDF)
+//                .contentLength(pdfFile.length())
+//                .body(resource);
+//    }
 
     @GetMapping("/retrieve/{policyId}")
     public ResponseEntity<FileSystemResource> retrievePdf(@PathVariable("policyId") Long policyId,

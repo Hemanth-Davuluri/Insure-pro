@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/policySubscription")
+@RequestMapping("/policy/policySubscription")
 public class PolicyController {
 
     @Autowired
