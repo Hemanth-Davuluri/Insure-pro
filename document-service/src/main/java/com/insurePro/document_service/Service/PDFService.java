@@ -1,18 +1,22 @@
 package com.insurePro.document_service.Service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.insurePro.document_service.DTO.PolicyEventDTO;
 import com.insurePro.document_service.Entity.DocumentEntity;
 import com.insurePro.document_service.Repository.DocumentRepo;
+import com.insurePro.document_service.Utilites.HashUtil;
 import com.insurePro.document_service.Utilites.PdfGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
-import java.util.Map;
+import java.time.Instant;
+import java.time.LocalDateTime;
 
 @Service
+@Slf4j
 public class PDFService {
 
     @Autowired
@@ -21,38 +25,49 @@ public class PDFService {
     @Autowired
     private PdfGenerator pdfGenerator;
 
+    @Autowired
+    private HashUtil hashUtil;
+
+    @Autowired
+    private S3Service s3Service;
+
     @KafkaListener(topics = "document" , groupId = "user-group")
-    private void GenerateDoc(String message) throws Exception {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> policyDetails = mapper.readValue(message, new TypeReference<>() {});
-        generatePolicyPdf(policyDetails);
-    }
-
-    private File generatePolicyPdf(Map<String, Object> policyDetails) throws Exception {
-        File pdfFile = pdfGenerator.generatePolicyPdf(policyDetails.get("policyId").toString(), policyDetails);
-
-        if(pdfGenerator.hasContent(pdfFile)){
-
-            Object policyIdObj = policyDetails.get("policyId");
-            Long policyId = null;
-            if (policyIdObj instanceof Integer) {
-                policyId = ((Integer) policyIdObj).longValue();
-            } else if (policyIdObj instanceof Long) {
-                policyId = (Long) policyIdObj;
-            } else if (policyIdObj != null) {
-                policyId = Long.valueOf(policyIdObj.toString());
-            }
-
-            saveToDb(policyId,pdfFile.getPath());
+    public void generateDoc(PolicyEventDTO policyEventDTO){
+        if (documentRepo.existsByPolicyId(policyEventDTO.getPolicyId())) {
+            return;
         }
-        System.out.println(pdfFile.getPath());
-        return pdfFile;
-    }
-    public void saveToDb(Long policyId,String path) {
-        DocumentEntity documentEntity = new DocumentEntity();
-        documentEntity.setPolicyId(policyId);
-        documentEntity.setFilePath(path);
-        documentRepo.save(documentEntity);
+        try {
+            generatePolicyPdf(policyEventDTO);
+        }
+        catch (Exception e) {
+            log.error("PDF generation failed for policy Id {}", policyEventDTO.getPolicyId(), e);
+        }
     }
 
+    @Transactional
+    private void generatePolicyPdf(PolicyEventDTO policyEventDTO) throws Exception {
+        File pdfFile = pdfGenerator.generatePolicyPdf(String.valueOf(policyEventDTO.getPolicyId()), policyEventDTO);
+        String hash = hashUtil.generateSHA256(pdfFile);
+        String S3Key = s3Service.uploadFile(pdfFile, policyEventDTO.getPolicyId());
+        DocumentEntity savedInDb = saveToDb(policyEventDTO.getPolicyId(), hash, S3Key);
+        if(savedInDb.getId() == null){
+            throw new RuntimeException("Failed to save document metadata");
+        }
+        boolean delete = pdfFile.delete();
+        if (!delete){
+            log.warn("Failed to delete temp file {}", pdfFile.getAbsolutePath());
+        }
+    }
+
+    private DocumentEntity saveToDb(Long policyId,String documentHash, String s3Key){
+        LocalDateTime createdAt = LocalDateTime.now();
+        DocumentEntity documentEntity = DocumentEntity.builder()
+                .policyId(policyId)
+                .documentHash(documentHash)
+                .s3Key(s3Key)
+                .createdAt(createdAt)
+                .build();
+        DocumentEntity save = documentRepo.save(documentEntity);
+        return save;
+    }
 }

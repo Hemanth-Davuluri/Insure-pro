@@ -2,10 +2,13 @@ package com.insurePro.policy_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-//import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
-@SpringBootApplication
-//@EnableDiscoveryClient
+@SpringBootApplication(scanBasePackages = {
+		"com.insurepro.policy_service",
+		"com.insurePro.Security"
+})
+@EnableDiscoveryClient
 public class PolicyServiceApplication {
 
 	public static void main(String[] args) {

@@ -21,11 +21,4 @@ public class PolicyDTO {
     private Double tax;
     private String status;
     private Map<String, String> payLoad;
-
-    @Override
-    public String toString(){
-
-        return "";
-    }
-
 }

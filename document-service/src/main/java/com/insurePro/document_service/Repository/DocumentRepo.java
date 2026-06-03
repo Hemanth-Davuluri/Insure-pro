@@ -7,4 +7,6 @@ import java.util.Optional;
 
 public interface DocumentRepo extends JpaRepository<DocumentEntity,Long> {
     Optional<DocumentEntity> findByPolicyId(Long policyId);
+
+    boolean existsByPolicyId(Long policyId);
 }

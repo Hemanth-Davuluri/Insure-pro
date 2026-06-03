@@ -13,15 +13,15 @@ public class BusinessRulesEngine {
 
         double dynamicPremium =0.0;
         switch(rule.getCoverageType()){
-            case "HOME_Policy":
+            case "Home":
                 Double homeRiskFactor =homeRiskFactor(customer.getPayLoad());
                 dynamicPremium = PremiumCalculation(rule.getTax(),homeRiskFactor,rule.getPremium());
                 break;
-            case "VEHICLE_Policy":
+            case "Vehicle":
                 Double vehicleRiskFactor =vehicleRiskFactor(customer.getPayLoad());
                 dynamicPremium = PremiumCalculation(rule.getTax(),vehicleRiskFactor,rule.getPremium());
                 break;
-            case "LIFE_Policy":
+            case "Life":
                 Double lifeRiskFactor =lifeRiskFactor(customer.getPayLoad());
                 dynamicPremium = PremiumCalculation(rule.getTax(),lifeRiskFactor,rule.getPremium());
                 break;

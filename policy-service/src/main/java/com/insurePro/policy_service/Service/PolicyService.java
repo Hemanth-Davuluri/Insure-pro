@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.insurePro.policy_service.BussinessRules.BusinessRulesEngine;
 import com.insurePro.policy_service.DTO.Customer;
 import com.insurePro.policy_service.DTO.PolicyDTO;
+import com.insurePro.policy_service.DTO.PolicyEventDTO;
+import com.insurePro.policy_service.DTO.PolicyStatsResponse;
 import com.insurePro.policy_service.Entity.CoverageRuleEntity;
 import com.insurePro.policy_service.Entity.PolicyEntity;
 import com.insurePro.policy_service.Enums.PolicyEvents;
@@ -11,7 +13,7 @@ import com.insurePro.policy_service.Enums.PolicyStates;
 import com.insurePro.policy_service.MapperClasses.CustomerSubscriptionMapper;
 import com.insurePro.policy_service.Repository.CoverageRepository;
 import com.insurePro.policy_service.Repository.PolicySubRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
@@ -20,31 +22,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class PolicyService {
 
-    @Autowired
-    private PolicySubRepository policySubRepository;
-
-    @Autowired
-    private CoverageRepository coverageRepository;
-
-    @Autowired
-    private CustomerSubscriptionMapper mapper;
-
-    @Autowired
-    private BusinessRulesEngine businessRulesEngine;
-
-    @Autowired
-    private StateMachineFactory<PolicyStates, PolicyEvents> stateMachineFactory;
-
-
-    @Autowired
-    private KafkaTemplate<String, Object> kafkaTemplate;
-
+    private final PolicySubRepository policySubRepository;
+    private final CoverageRepository coverageRepository;
+    private final CustomerSubscriptionMapper mapper;
+    private final BusinessRulesEngine businessRulesEngine;
+    private final StateMachineFactory<PolicyStates, PolicyEvents> stateMachineFactory;
+    private final ObjectMapper objectMapper;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
     //    retrieving customers who subscribed to policy
     public List<PolicyDTO> getPolicesSubscribed() throws Exception {
@@ -59,8 +50,6 @@ public class PolicyService {
         Double dynamic_premium = businessRulesEngine.validatingCoverageType(customer, rule);
 
         PolicyEntity entity = new PolicyEntity();
-        ObjectMapper mapper= new ObjectMapper();
-
         if (customer.getPolicyId() != null) {
             entity.setPolicyId(customer.getPolicyId());
         }
@@ -85,24 +74,17 @@ public class PolicyService {
 //            the 2 commands are depreciated
             stateMachine.start();
             stateMachine.sendEvent(PolicyEvents.SUBMIT);
-            savedPolicy.setStatus(stateMachine.getState().getId().name());
-            return policySubRepository.save(savedPolicy).getPolicyId();
+
+            PolicyStates newState = stateMachine.getState().getId();
+            savedPolicy.setStatus(newState.name());
+            PolicyEntity updatedPolicy = policySubRepository.save(savedPolicy);
+            if(newState == PolicyStates.ACTIVE) {
+                PolicyEventDTO policyEventDTO = objectMapper.convertValue(updatedPolicy, PolicyEventDTO.class);
+                kafkaTemplate.send("document", policyEventDTO);
+            }
+            return updatedPolicy.getPolicyId();
         }
         System.out.println(savedPolicy.toString());
-
-        Map<String, Object> map = mapper.convertValue(savedPolicy, Map.class);
-        kafkaTemplate.send("document",map);
-//            CompletableFuture<SendResult<String, Object>> future = kafkaTemplate.send("document",entity.getPolicyId().toString(),policyDetails);
-//            future.whenComplete((result, ex) -> {
-//                if (ex == null) {
-//                    // Message sent successfully
-//                    System.out.println("Sent message with offset: " + result.getRecordMetadata().offset());
-//                } else {
-//                    // Handle error
-//                    System.err.println("Failed to send message: " + ex.getMessage());
-//                }
-//            });
-
         return savedPolicy.getPolicyId();
     }
 
@@ -133,6 +115,24 @@ public class PolicyService {
     public PolicyDTO getPolicesSubscribedByaCustomer(Long customerId, String coverageType) {
         PolicyEntity all = policySubRepository.findByCustomerIdAndCoverageType(customerId,coverageType);
         return mapper.toDTO(all);
+    }
+
+    public PolicyStatsResponse getPolicyStats(Long customerId) {
+        long totalPolicies = policySubRepository.countByCustomerId(customerId);
+        long activePolicies =
+                policySubRepository.countByCustomerIdAndStatus(customerId,
+                        PolicyStates.ACTIVE.toString()
+                );
+        Double totalPremium =
+                Optional.ofNullable(
+                        policySubRepository.getPremium(customerId, PolicyStates.ACTIVE.toString())
+                ).orElse(0.0);
+
+        return PolicyStatsResponse.builder()
+                .totalPolicies(totalPolicies)
+                .activePolicies(activePolicies)
+                .totalPremium(totalPremium)
+                .build();
     }
 
 
