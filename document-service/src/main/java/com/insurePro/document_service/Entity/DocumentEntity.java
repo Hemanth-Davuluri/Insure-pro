@@ -2,21 +2,30 @@ package com.insurePro.document_service.Entity;
 
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
 @Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class DocumentEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
     @Column(nullable = false)
     private Long policyId;
 
     @Column(nullable = false)
-    private String filePath;
+    private String s3Key;
 
-//    @Column(nullable = false)
-//    private String hash;
+    @Column(nullable = false, length = 64)
+    private String documentHash;
+
+    private LocalDateTime createdAt;
 }

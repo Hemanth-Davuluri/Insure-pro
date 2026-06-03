@@ -1,5 +1,8 @@
 package com.insurepro.claim_service.Service.Impl;
 
+import com.insurepro.claim_service.ClaimEnum.ClaimStatus;
+import com.insurepro.claim_service.DTO.ClaimDto;
+import com.insurepro.claim_service.DTO.ClaimStatsResponse;
 import com.insurepro.claim_service.Entity.ClaimEntity;
 import com.insurepro.claim_service.Service.CustomerService;
 import com.insurepro.claim_service.DTO.Claim;
@@ -16,8 +19,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -77,5 +82,42 @@ public class CustomerServiceImpl implements CustomerService {
         }
         List<Claim> claimsOfuser = claimMapper.EntityToDtoList(claimedEntitesofUser);
         return claimsOfuser;
+    }
+
+    @Override
+    public ClaimStatsResponse getClaimStats(Long customerId) {
+
+        Long totalClaims = claimRepo.countByCustomerId(customerId);
+        Long approvedClaims = claimRepo.
+                countByCustomerIdAndStatus(customerId, ClaimStatus.APPROVED.toString());
+        Long pendingClaims = claimRepo.
+                countByCustomerIdAndStatus(customerId, ClaimStatus.PENDING.toString());
+        Long rejectedClaims = claimRepo.
+                countByCustomerIdAndStatus(customerId, ClaimStatus.REJECTED.toString());
+        Double totalClaimAmount = claimRepo.getTotalClaimAmount(customerId);
+        Double approvedClaimAmount = claimRepo.getApprovedClaimAmount(customerId);
+
+        return ClaimStatsResponse.builder()
+                .totalClaims(totalClaims)
+                .approvedClaims(approvedClaims)
+                .rejectedClaims(rejectedClaims)
+                .pendingClaims(pendingClaims)
+                .totalClaimAmount(totalClaimAmount)
+                .approvedClaimAmount(approvedClaimAmount)
+                .build();
+    }
+
+    @Override
+    public List<ClaimDto> findByCustomerId(Long customerId) {
+        List<ClaimEntity> byCustomerId = claimRepo.findByCustomerId(customerId);
+        return byCustomerId.stream().map(claimEntity -> ClaimDto.builder()
+                        .claimNumber(claimEntity.getClaimId())
+                        .customerId(claimEntity.getCustomerId())
+                        .policyId(claimEntity.getPolicyId())
+                        .amount(claimEntity.getAmount())
+                        .status(claimEntity.getStatus())
+                        .createdDate(claimEntity.getDate())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

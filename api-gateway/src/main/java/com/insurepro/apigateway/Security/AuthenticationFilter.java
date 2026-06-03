@@ -22,6 +22,9 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     @Override
     public GatewayFilter apply(Config config) {
         return ((exchange, chain) -> {
+            if (exchange.getRequest().getMethod().matches("OPTIONS")) {
+                return chain.filter(exchange);
+            }
             if (validator.isSecured.test(exchange.getRequest())) {
                 //header contains token or not
                 if (!exchange.getRequest().getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
@@ -30,6 +33,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                 String authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
                 if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                    System.out.println(authHeader);
                     authHeader = authHeader.substring(7);
                 }
                 try {

@@ -5,6 +5,7 @@ import com.insurePro.policy_service.BussinessRules.BusinessRulesEngine;
 import com.insurePro.policy_service.DTO.Customer;
 import com.insurePro.policy_service.DTO.PolicyDTO;
 import com.insurePro.policy_service.DTO.PolicyEventDTO;
+import com.insurePro.policy_service.DTO.PolicyStatsResponse;
 import com.insurePro.policy_service.Entity.CoverageRuleEntity;
 import com.insurePro.policy_service.Entity.PolicyEntity;
 import com.insurePro.policy_service.Enums.PolicyEvents;
@@ -13,7 +14,6 @@ import com.insurePro.policy_service.MapperClasses.CustomerSubscriptionMapper;
 import com.insurePro.policy_service.Repository.CoverageRepository;
 import com.insurePro.policy_service.Repository.PolicySubRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.statemachine.StateMachine;
 import org.springframework.statemachine.config.StateMachineFactory;
@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -115,6 +115,24 @@ public class PolicyService {
     public PolicyDTO getPolicesSubscribedByaCustomer(Long customerId, String coverageType) {
         PolicyEntity all = policySubRepository.findByCustomerIdAndCoverageType(customerId,coverageType);
         return mapper.toDTO(all);
+    }
+
+    public PolicyStatsResponse getPolicyStats(Long customerId) {
+        long totalPolicies = policySubRepository.countByCustomerId(customerId);
+        long activePolicies =
+                policySubRepository.countByCustomerIdAndStatus(customerId,
+                        PolicyStates.ACTIVE.toString()
+                );
+        Double totalPremium =
+                Optional.ofNullable(
+                        policySubRepository.getPremium(customerId, PolicyStates.ACTIVE.toString())
+                ).orElse(0.0);
+
+        return PolicyStatsResponse.builder()
+                .totalPolicies(totalPolicies)
+                .activePolicies(activePolicies)
+                .totalPremium(totalPremium)
+                .build();
     }
 
 

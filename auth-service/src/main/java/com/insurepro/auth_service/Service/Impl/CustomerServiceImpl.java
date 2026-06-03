@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,15 +29,15 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public RegisterResponseDTO register(RegisterDTO register) {
         CustomerEntity userDetails = modelMapper.map(register, CustomerEntity.class);
-        String role = register.getRoles();
-        if (role == null || role.isBlank()) {
-            userDetails.setRoles(List.of("ROLE_USER"));
-        } else {
-            userDetails.setRoles(List.of("ROLE_" + role.toUpperCase()));
-        }
+        List<String> roles = register.getRoles();
+        List<String> userRoles  = roles.stream()
+                .filter(role -> !role.isBlank() && role != null)
+                .map(String::trim)
+                .map(String::toUpperCase)
+                .toList();
         userDetails.setPassword(passwordEncoder.encode(register.getPassword()));
         userDetails.setCreatedAt(LocalDateTime.now());
-        userDetails.setRoles(Arrays.asList("user"));
+        userDetails.setRoles(userRoles);
         CustomerEntity save = customersRepo.save(userDetails);
         return modelMapper.map(save, RegisterResponseDTO.class);
     }

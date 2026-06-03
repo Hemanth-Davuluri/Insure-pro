@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
 public class RegisterDTO {
 
@@ -23,5 +25,5 @@ public class RegisterDTO {
     private String phoneNumber;
 
 
-    private String roles;
+    private List<String> roles;
 }

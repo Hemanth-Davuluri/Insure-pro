@@ -22,8 +22,6 @@ public class PdfGenerator {
 
     public File generatePolicyPdf(String policyId, PolicyEventDTO dto) throws Exception {
 
-//      Defining Filepath
-//        =policyDetails.get("coverageType") +"_"+policyDetails.get("customerName")+"_"+policyDetails.get("customerId")+".pdf";
         String filePath =dto.getCoverageType() +"_"+ dto.getCustomerId()+".pdf";
         File pdfFile= Paths.get(basePath,filePath).toFile();
 
@@ -76,18 +74,6 @@ public class PdfGenerator {
         return pdfFile;
     }
 
-    public Boolean hasContent(File pdfFile) throws Exception {
-        try(PDDocument document = PDDocument.load(pdfFile)){
-
-            if(document.getNumberOfPages()==0){
-                return false;
-            }
-
-            PDFTextStripper textStripper = new PDFTextStripper();
-            String text = textStripper.getText(document).trim();
-            return !text.isEmpty();
-        }
-    }
     private float writeLine(PDPageContentStream contentStream,
                             String label,
                             Object value,

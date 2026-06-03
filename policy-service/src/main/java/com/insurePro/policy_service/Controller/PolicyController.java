@@ -2,6 +2,7 @@ package com.insurePro.policy_service.Controller;
 
 import com.insurePro.policy_service.DTO.Customer;
 import com.insurePro.policy_service.DTO.PolicyDTO;
+import com.insurePro.policy_service.DTO.PolicyStatsResponse;
 import com.insurePro.policy_service.Service.PolicyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -66,6 +67,11 @@ public class PolicyController {
 
         policyService.unSubscribeToPolicy(id, cancel);
         return ResponseEntity.ok("deleted the policy"+ id);
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<PolicyStatsResponse> getPolicyStats(@RequestParam("customerId")  Long customerId) {
+        return ResponseEntity.ok(policyService.getPolicyStats(customerId));
     }
 
     /*

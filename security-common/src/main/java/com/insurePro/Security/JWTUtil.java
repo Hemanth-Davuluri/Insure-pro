@@ -1,4 +1,4 @@
-package com.insurepro.auth_service.Security;
+package com.insurePro.Security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

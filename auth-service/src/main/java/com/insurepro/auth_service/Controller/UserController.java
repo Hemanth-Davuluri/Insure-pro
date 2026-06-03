@@ -6,7 +6,6 @@ import com.insurepro.auth_service.DTO.RegisterDTO;
 import com.insurepro.auth_service.DTO.RegisterResponseDTO;
 import com.insurepro.auth_service.Security.JWTUtil;
 import com.insurepro.auth_service.Service.CustomerService;
-import com.insurepro.auth_service.Service.Impl.UserInfoConfigManager;
 import com.insurepro.auth_service.Utils.ResponseHandler;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +15,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,7 +30,6 @@ public class UserController {
     public ResponseEntity<?> login(@Valid @RequestBody LoginDTO login){
         Authentication authenticate = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(login.getUsername(), login.getPassword()));
-
         UserDetails principal = (UserDetails) authenticate.getPrincipal();
         String token = jwtUtil.generateToken(
                 principal.getUsername(),
